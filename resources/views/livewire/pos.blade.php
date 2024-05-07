@@ -1,12 +1,12 @@
-<div class="row mt-4">
+<div class="row">
     <div class="col-lg-8 col-8">
         <div class="row">
             <div class="col-lg-12">
                 <div class="col-auto">
                     <div class="input-group">
                         <span class="input-group-text" style="background: white;border-right: none;border-top-left-radius: 15px;border-bottom-left-radius: 15px;"><i class="bi bi-search"></i></span>
-                        <input style="height:50px;border-left: none;border-top-right-radius: 15px;border-bottom-right-radius: 15px;font-size:18px;" wire:model.live.debounce.300ms='search' type="text" class="form-control"
-                            id="autoSizingInputGroup" placeholder="Cari Produk">
+                        <input style="height:50px;border-left: none;border-top-right-radius: 15px;border-bottom-right-radius: 15px;font-size:18px;" wire:model.live.debounce.100ms='search' type="text" class="form-control"
+                            id="autoSizingInputGroup" placeholder="Cari Nama Atau Kode Produk">
                     </div>
                 </div>
             </div>
@@ -14,10 +14,12 @@
         <div class="row mt-3" id="product-area">
             @if(count($products) > 0)
                 @foreach ($products as $item)
-                    <div wire:click="updateCart('{{ $item->id }}')" class="col-xl-3 col-lg-4 col-md-4 col-sm-12 mt-3">
+                    <div wire:click="updateCart('{{ $item->id }}')" class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mt-3">
                         <div class="card card-name h-100xx">
-                            <img src="{{ Str::startsWith($item->image, ['http://', 'https://']) ? $item->image : asset('/storage/product/' . $item->image) }}"
-                                class="card-img-top" alt="..." style="height: 120px;">
+                            <div class="image-container">
+                                <img src="{{ Str::startsWith($item->image, ['http://', 'https://']) ? $item->image : asset('/storage/product/' . $item->image) }}"
+                                class="card-img-top" alt="...">  
+                            </div>
                             <div class="card-body">
                                 <h5 class="card-title">{{ $item->name }}</h5>
                                 <p class="card-text">{{ $item->selling_price_formatted }}</p>
@@ -57,19 +59,23 @@
                         {{ session('message') }}
                     </div>
                 @endif
+                @if (session()->has('warning'))
+                    <div class="alert alert-warning text-center">
+                        {{ session('warning') }}
+                    </div>
+                @endif
                 @if ($order)
                     @foreach ($order->orderProducts as $item)
                         <div class="card mt-2">
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-betweenx align-items-center">
 
                                 <img src="{{ Str::startsWith($item->product->image, ['http://', 'https://']) ? $item->product->image : asset('/storage/product/' . $item->product->image) }}"
-                                    style="width: 80px;height: 80px" />
-
+                                    style="width: 80px;height: 80px;margin-right:10px;" />
                                 <div>
-                                    <span>{{ $item->product->name }}</span><br>
-                                    <span class="text-muted">{{ $item->product->selling_price_formatted }}</span>
+                                    <b>{{ $item->product->name }}</b><br>
+                                    {{ $item->product->selling_price_formatted }}
                                 </div>
-                                <div class="d-flex align-items-center me-2">
+                                <div style="position:absolute;right:10px;   ">
                                     <button class="btn btn-sm btn-warning me-2"
                                         wire:click="updateCart('{{ $item->product->id }}', false)">-</button>
                                     <span>{{ $item->quantity }}</span>

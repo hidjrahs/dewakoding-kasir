@@ -44,8 +44,10 @@ class Pos extends Component
 
     public function updateCart($productId, $isAdded = true)
     {
-        $this->createOrder();
         try {
+            if(!$this->order){
+                $this->createOrder();
+            }
             if ($this->order) {
                 $product = Product::findOrFail($productId);
                 $orderProduct = OrderProduct::where('order_id', $this->order->id)
@@ -54,6 +56,10 @@ class Pos extends Component
                 
                 if ($orderProduct) {
                     if ($isAdded) {
+                        if ($orderProduct->quantity + 1 > $product->stock) {
+                            session()->flash('warning', 'Stok tidak cukup');
+                            return false;
+                        }
                         $orderProduct->increment('quantity', 1);
                     } else {
                         $orderProduct->decrement('quantity', 1);
@@ -66,12 +72,20 @@ class Pos extends Component
                     $orderProduct->save();
                 } else {
                     if ($isAdded) {
+                        if ($product->stock < 1) {
+                            session()->flash('warning', 'Stok tidak cukup');
+                            return false;
+                        }
+
                         OrderProduct::create([
                             'order_id' => $this->order->id,
                             'product_id' => $product->id,
                             'unit_price' => $product->selling_price,
                             'quantity' => 1
                         ]);
+                    }else{
+                        session()->flash('warning', 'Stok Tidak Cukup');
+                        return false;
                     }
                 }
                 $this->total_price = $this->order->total_price ?? 0;
