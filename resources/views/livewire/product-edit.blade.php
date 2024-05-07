@@ -41,7 +41,7 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-12">
+                        <div class="col-md-12 d-none">
                             <label for="description" class="form-label">Deskripsi</label>
                             <textarea class="form-control" wire:model="description"></textarea>
                         </div>
@@ -52,7 +52,7 @@
                                     <img src="{{ $image_url }}" alt="Preview Gambar" class="img-thumbnail" style="height: 200px">
                                 </div>
                             @endif
-                            <input type="file" class="form-control mt-2" id="image" wire:model="image">
+                            <input type="file" class="form-control mt-2" id="image" accept="image/*" wire:model="image">
                             @error('image')
                                 <div class="alert alert-danger mt-2">
                                     {{ $message }}

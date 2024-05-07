@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\OrderProduct;
+use Validator;
 
 class Pos extends Component
 {
@@ -13,14 +14,25 @@ class Pos extends Component
     public $product;
     public $order;
     public $total_price;
-    public $paid_amount;
+    public $paid_amount = 0;
 
     public function render()
     {
         $this->order = Order::where('done_at', null)
+                ->latest()
+                ->first();
+
+        if ($this->order ==  null) {
+            $this->order = Order::create([
+                'invoice_number' => $this->generateUniqueCode()
+            ]);
+        }
+
+        $this->order = Order::where('done_at', null)
                 ->with('orderProducts')
                 ->latest()
                 ->first();
+        
         $this->total_price = $this->order->total_price ?? 0;
         return view('livewire.pos', [
             'products' => Product::search($this->search)->paginate(12),
@@ -39,15 +51,12 @@ class Pos extends Component
                 'invoice_number' => $this->generateUniqueCode()
             ]);
         }
-        session()->flash('message', 'Sukses mulai transaksi, silakan pilih produk.');
+        // session()->flash('message', 'Sukses mulai transaksi, silakan pilih produk.');
     }
 
     public function updateCart($productId, $isAdded = true)
     {
         try {
-            if(!$this->order){
-                $this->createOrder();
-            }
             if ($this->order) {
                 $product = Product::findOrFail($productId);
                 $orderProduct = OrderProduct::where('order_id', $this->order->id)
@@ -104,17 +113,50 @@ class Pos extends Component
 
     public function done()
     {
+        
         $this->validate([
-            'paid_amount' => 'required'
+            'paid_amount' => 'required|numeric'
+        ], [
+            'paid_amount.required' => 'Jumlah yang dibayar harus diisi.',
+            'paid_amount.numeric' => 'Jumlah yang dibayar harus berupa angka.',
+            'paid_amount.min' => 'Jmlah yang dibayar harus di atas 0.'
         ]);
+        $totalBelanja = 0;
+        $totalBelanja = OrderProduct::where('order_id', $this->order->id)->sum('unit_price');
+        if($totalBelanja == 0){
+            $this->dispatch('openModal');
+            session()->flash('payment', 'Mohon Pilih Produk Yang Akan Dibeli Terlebih Dahulu Sebelum Membayar');
+            return false;
+        }
+        if($this->paid_amount == 0 || $this->paid_amount == ""){
+            $this->dispatch('openModal');
+            session()->flash('payment', 'Mohon Isi Uang Yang Dibayarkan');
+            return false;
+        }
+        if($this->paid_amount < $totalBelanja){
+            $this->dispatch('openModal');
+            session()->flash('payment', 'Uang Yang Dibayarkan Kurang Dari Total Belanja');
+            return false;
+        }
 
         $this->order->update([
             'paid_amount' => $this->paid_amount,
             'done_at' => now()
         ]);
 
+        // kurangi stok
+        $itemBelanja = OrderProduct::where('order_id', $this->order->id)->get();
+        foreach($itemBelanja as $t){
+            $product    = Product::where('id', $t->product_id)->firstOrFail();
+            $sisaStok   = $product->stock - $t->quantity;
+            $product    = Product::where('id',$t->product_id)->update(['stock'=>$sisaStok]);   
+        }
+
         session()->flash('message', 'Order/Transaksi selesai');
-        return redirect()->route('pos');
+        $this->dispatch('closeModal');
+    
+        // Emitkan event untuk membuka kembali modal jika validasi gagal
+        // return redirect()->route('pos');
     }
 
     function generateUniqueCode($length = 6) {

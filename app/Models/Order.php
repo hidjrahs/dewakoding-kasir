@@ -28,7 +28,7 @@ class Order extends Model
 
     public function scopeSearch($query, $value)
     {
-        $query->where('invoice_number', 'like', "%{$value}%");
+        $query->where('invoice_number', 'like', "%{$value}%")->orWhere('paid_amount', 'like', "%{$value}%");
     }
 
     public function getTotalPriceAttribute()
@@ -43,9 +43,31 @@ class Order extends Model
         return $totalPrice;
     }
 
+    public function getTotalQtyAttribute()
+    {
+        $orderProducts = $this->orderProducts;
+        $totalQty = 0;
+
+        foreach ($orderProducts as $orderProduct) {
+            $totalQty += $orderProduct->quantity;
+        }
+
+        return $totalQty;
+    }
+
     public function getDoneAtForHumanAttribute()
     {
-        return $this->done_at ? Carbon::parse($this->done_at)->diffForHumans() : null;
+        setlocale(LC_TIME, 'id_ID');
+        Carbon::setLocale('id');
+        // return $this->done_at ? Carbon::parse($this->done_at)->diffForHumans() : null;
+        $date = $this->done_at ? Carbon::parse($this->done_at) : null;
+        return $date ? 
+            $date->diffInHours() > 3 ? 
+                $date->format('d F Y H:i:s') 
+            : 
+                $date->diffForHumans() 
+            : 
+            null;
     }
 
     public function getPaidAmountFormattedAttribute()
@@ -55,9 +77,13 @@ class Order extends Model
 
     public function getTotalPriceFormattedAttribute()
     {
-        return 'Rp ' . number_format($this->totalPrice, 0, ',', '.');
+        return 'Rp ' . number_format($this->totalPrice, 0, ',', '.')." (".$this->totalQty." pcs)";
     }
 
+    public function getKembalianFormattedAttribute()
+    {
+        return 'Rp ' . number_format($this->paid_amount-$this->totalPrice, 0, ',', '.');
+    }
 
     protected static function boot()
     {

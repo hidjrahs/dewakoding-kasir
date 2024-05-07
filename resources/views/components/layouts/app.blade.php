@@ -8,7 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter&display=swap"> -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Poppins:ital,wght@0,200;0,300;0,400;0,500;1,200&display=swap">
-    <link href="{{asset('assets/')}}" rel="stylesheet">
     <style>
       body {
           font-family: 'Inter', sans-serif;
@@ -40,13 +39,50 @@
         box-shadow: 0px 7px 20px 0px #bfbfbf;
         border:none;
       }
+      .atur-qty{
+        position:absolute;
+        right:10px;
+      }
+
+      @media only screen and (max-width: 1024px) {
+        #area-checkout {
+          height: 200px !important;
+        }
+        .cart-area {
+          margin-bottom: 100px;
+        }
+      }
 
       @media only screen and (max-width: 768px) {
-      
+        .p-name{
+          width: 140px !important;
+        }
+        .justify-content-betweenx{
+          font-size:14px;
+        }
+        .justify-content-betweenx img{
+          width: 40px !important;
+          height: 40px !important;
+        }
+        .atur-qty{
+          position:absolute;
+          right:10px;
+        }
+        .cart-area{
+          margin-bottom:100px;
+        }
+        #area-checkout{
+          height: 200px !important;
+        }
       }
 
       @media only screen and (max-width: 480px) {
-        
+          .cart-area{
+            margin-bottom:100px;
+          }
+          #area-checkout{
+            height: 200px !important;
+          }
       }
       .card-title{
         font-size: 14px;
@@ -87,6 +123,7 @@
         border-radius: 15px;
       }
       .footer-menu{
+        z-index: 99999;
         position: fixed;
         bottom: 0;
         width: 100%;
@@ -114,8 +151,10 @@
         width: 100%;
         height: auto;
       }
+      .p-name{
+        width: 160px;
+      }
   </style>
-
   </head>
   <body style="background-color: #f0f8ff">
     <div id="head-countainer" class="container mt-3">
@@ -127,6 +166,7 @@
       </div>
       {{ $slot }}
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <div class="footer-menu">
       <a href="{{url('/pos')}}" type="button" class="navigasi btn btn-light {{ request()->is('pos*', '') || request()->is('/') ? 'active' : '' }}">
@@ -148,5 +188,35 @@
         Pesanan
       </a>
     </div>
+    <script>
+      document.addEventListener('livewire:init', function() {
+        Livewire.on('openModal', function () {
+          $('.modal-backdrop').remove();
+          var modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+          modal.show();
+        });
+        Livewire.on('closeModal', function () {
+          $('.modal-backdrop').remove();
+          var modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+          modal.hide();
+        });
+      });
+      // document.addEventListener('livewire:load', function() {
+        function confirmDelete(itemId) {
+          if (confirm('Yakin menghapus produk ini ?')) {
+              Livewire.dispatch('destroy', { id: itemId});
+          }
+        }
+      // });
+      function hideContent(){
+        if($("#product-area").hasClass('d-none')){
+          $("#product-area").removeClass('d-none');
+          $(".hide-content").html('<i class="bi bi-eye-slash"></i>');
+        }else{
+          $("#product-area").addClass('d-none');
+          $(".hide-content").html('<i class="bi bi-eye"></i>');
+        }
+      }
+    </script>
   </body>
 </html>

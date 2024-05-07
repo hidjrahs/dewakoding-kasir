@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Product;
+use Intervention\Image\Facades\Image;
 
 class ProductEdit extends Component
 {
@@ -44,6 +45,19 @@ class ProductEdit extends Component
        
         if ($this->image) {
             $this->image->storeAs('public/product', $this->image->hashName());
+
+            // Image::make($path . '/' . $rename)->save($path . '/' . $rename, 60); 
+            // $image = $this->image;
+            // $imageName = $image->hashName();
+            // $imagePath = storage_path('app/public/product/' . $imageName);
+
+            // // Mengompres gambar dengan lebar maksimum 1200px dan tinggi maksimum 1200px
+            // Image::make($image->getRealPath())
+            // ->resize(300, 300, function ($constraint) {
+            //     $constraint->aspectRatio();
+            //     $constraint->upsize();
+            // })
+            // ->save($imagePath);
 
             $product->update([
                 'name' => $this->name,

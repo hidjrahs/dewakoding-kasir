@@ -11,7 +11,7 @@ class OrderList extends Component
     use WithPagination;
 
     public $search = '';
-    public $perPage = 10;
+    public $perPage = 5;
 
     public function render()
     {
