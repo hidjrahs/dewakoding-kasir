@@ -44,6 +44,7 @@ class Pos extends Component
 
     public function updateCart($productId, $isAdded = true)
     {
+        $this->createOrder();
         try {
             if ($this->order) {
                 $product = Product::findOrFail($productId);
@@ -99,7 +100,7 @@ class Pos extends Component
         ]);
 
         session()->flash('message', 'Order/Transaksi selesai');
-        return redirect()->route('order');
+        return redirect()->route('pos');
     }
 
     function generateUniqueCode($length = 6) {

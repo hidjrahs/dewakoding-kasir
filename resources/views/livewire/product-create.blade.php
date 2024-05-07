@@ -1,11 +1,4 @@
 <div class="mt-4">
-  
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{{url('product')}}">Daftar Produk</a></li>
-      <li class="breadcrumb-item active" aria-current="page">Tambah Produk</li>
-    </ol>
-  </nav>
   <div class="row">
     <div class="col-md-12">
         <div class="card">

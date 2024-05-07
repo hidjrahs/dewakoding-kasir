@@ -1,9 +1,4 @@
 <div class="mt-4">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item active" aria-current="page">Daftar Produk</li>
-        </ol>
-      </nav>
     <div class="row">
         <div class="col-md-12">
             @if (session()->has('message'))
@@ -19,7 +14,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-md-8">
-                            <a href="{{url('product/create')}}" class="btn btn-primary">+ Tambah Produk</a>
+                            <a href="{{url('product/create')}}" style="" class="btn btn-primary">+ Tambah Produk</a>
                         </div>
                         <div class="col-md-4 mt-3">
                             
@@ -32,7 +27,7 @@
                     </div>
                     
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped table-hover">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
