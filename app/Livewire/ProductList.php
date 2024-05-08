@@ -11,19 +11,20 @@ class ProductList extends Component
     use WithPagination;
 
     public $search = '';
-    public $perPage = 10;
+    public $perPage = 5;
+    protected $listeners = ['destroy'];
 
     public function destroy($id)
-    {
+    {        
         Product::destroy($id);
-        session()->flash('message', 'Data Berhasil Dihapus.');
+        session()->flash('message', 'Produk Berhasil Dihapus.');
         return redirect()->route('product');
     }
 
     public function render()
     {
         return view('livewire.product-list', [
-            'products' => Product::search($this->search)
+            'products' => Product::search($this->search)->orderBy('created_at','desc')
                         ->paginate($this->perPage)
         ]);
     }

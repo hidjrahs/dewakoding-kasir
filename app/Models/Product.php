@@ -24,7 +24,7 @@ class Product extends Model
 
     public function scopeSearch($query, $value)
     {
-        $query->where('name', 'like', "%{$value}%");
+        $query->where('name', 'like', "%{$value}%")->orWhere('id', 'like', "%{$value}%");
     }
 
     protected static function boot()

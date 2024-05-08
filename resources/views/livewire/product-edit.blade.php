@@ -1,13 +1,7 @@
 <div class="mt-4">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ url('product') }}">Daftar Produk</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Edit Produk</li>
-        </ol>
-    </nav>
     <div class="row">
         <div class="col-md-12">
-            <div class="card">
+            <div class="card" style="margin-bottom:100px;">
                 <div class="card-body">
                     <form class="row g-3" wire:submit="update" enctype="multipart/form-data">
                         <div class="col-md-6">
@@ -47,7 +41,7 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-12">
+                        <div class="col-md-12 d-none">
                             <label for="description" class="form-label">Deskripsi</label>
                             <textarea class="form-control" wire:model="description"></textarea>
                         </div>
@@ -58,7 +52,7 @@
                                     <img src="{{ $image_url }}" alt="Preview Gambar" class="img-thumbnail" style="height: 200px">
                                 </div>
                             @endif
-                            <input type="file" class="form-control mt-2" id="image" wire:model="image">
+                            <input type="file" class="form-control mt-2" id="image" accept="image/*" wire:model="image">
                             @error('image')
                                 <div class="alert alert-danger mt-2">
                                     {{ $message }}
@@ -67,6 +61,7 @@
                         </div>
                         <div class="col-12">
                             <button type="submit" class="btn btn-primary">Simpan</button>
+                            <a href="{{url('/product')}}" style="text-decoration:none;margin-left:10px;" class="text-muted">Batal</a>
                         </div>
                     </form>
                 </div>

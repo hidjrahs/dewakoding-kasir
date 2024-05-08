@@ -1,15 +1,8 @@
 <div class="mt-4">
-  
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{{url('product')}}">Daftar Produk</a></li>
-      <li class="breadcrumb-item active" aria-current="page">Tambah Produk</li>
-    </ol>
-  </nav>
   <div class="row">
     <div class="col-md-12">
-        <div class="card">
-            <div class="card-body">
+        <div class="card" style="margin-bottom:100px;">
+            <div class="card-body p-3">
               <form class="row g-3" wire:submit="store" enctype="multipart/form-data">
                 <div class="col-md-6">
                   <label for="name" class="form-label">Nama</label>
@@ -48,23 +41,22 @@
                   @enderror
                 </div>
                
-                <div class="col-md-12">
+                <div class="col-md-12 d-none">
                   <label for="description" class="form-label">Deskripsi</label>
                   <textarea class="form-control" wire:model="description"></textarea>
                 </div>
                 <div class="col-md-12">
-                  <label for="description" class="form-label">Image</label>
-                  <input type="file" class="form-control" id="image" wire:model="image">
+                  <label for="description" class="form-label">Gambar</label>
+                  <input type="file" class="form-control" accept="image/*" id="image" wire:model="image">
                   @error('image')
                     <div class="alert alert-danger mt-2">
                         {{ $message }}
                     </div>
                   @enderror
                 </div>
-               
-                
                 <div class="col-12">
                   <button type="submit" class="btn btn-primary">Simpan</button>
+                  <a href="{{url('/product')}}" style="text-decoration:none;margin-left:10px;" class="text-muted">Batal</a>
                 </div>
               </form>
         
