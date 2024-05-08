@@ -1,7 +1,7 @@
 <div class="mt-4">
     <div class="row">
         <div class="col-md-12">
-            <div class="card">
+            <div class="card" style="margin-bottom:100px;">
                 <div class="card-body">
                     <form class="row g-3" wire:submit="update" enctype="multipart/form-data">
                         <div class="col-md-6">
@@ -61,6 +61,7 @@
                         </div>
                         <div class="col-12">
                             <button type="submit" class="btn btn-primary">Simpan</button>
+                            <a href="{{url('/product')}}" style="text-decoration:none;margin-left:10px;" class="text-muted">Batal</a>
                         </div>
                     </form>
                 </div>

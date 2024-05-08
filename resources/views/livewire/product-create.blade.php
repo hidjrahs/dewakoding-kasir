@@ -1,7 +1,7 @@
 <div class="mt-4">
   <div class="row">
     <div class="col-md-12">
-        <div class="card">
+        <div class="card" style="margin-bottom:100px;">
             <div class="card-body p-3">
               <form class="row g-3" wire:submit="store" enctype="multipart/form-data">
                 <div class="col-md-6">

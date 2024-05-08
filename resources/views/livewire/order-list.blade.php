@@ -10,7 +10,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <div class="card">
+            <div class="card" style="margin-bottom:100px;">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-3 col-md-1">
