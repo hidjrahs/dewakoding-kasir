@@ -16,7 +16,7 @@
                         <div class="col-md-12 mt-3">
                             <a href="{{url('product/create')}}" style="" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Tambah Produk</a>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <select 
                                 wire:model.live='perPage' 
                                 class="form-select">
@@ -28,7 +28,7 @@
                                 <option value="100">100</option>
                             </select>
                         </div>
-                        <div class="col-md-10 mt-3">
+                        <div class="col-md-11 mt-3">
                             <div class="input-group mb-3">
                                 <span class="input-group-text"><i class="bi bi-search"></i></span>
                                 <input wire:model.live='search' type="text" class="form-control" placeholder="Cari Produk"
@@ -56,7 +56,11 @@
                                         <img src="{{$item->image_url}}" style="width: 80px;height: 80px" />
                                     </td>
                                     <td>{{$item->name}}</td>
-                                    <td>{{$item->stock}}</td>
+                                    <td>
+                                        {!!
+                                            ($item->stock <= 8) ? '<span style="color:red;cursor:pointer" title="Stok Produk Hampir Habis">' . $item->stock . '</span>' : $item->stock
+                                        !!}
+                                    </td>
                                     <td>{{$item->cost_price}}</td>
                                     <td>{{$item->selling_price}}</td>
                                     <td class="px-4 py-3 flex items-center justify-end">

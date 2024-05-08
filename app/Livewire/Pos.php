@@ -113,7 +113,7 @@ class Pos extends Component
 
     public function done()
     {
-        
+
         $this->validate([
             'paid_amount' => 'required|numeric'
         ], [
@@ -152,8 +152,93 @@ class Pos extends Component
             $product    = Product::where('id',$t->product_id)->update(['stock'=>$sisaStok]);   
         }
 
-        session()->flash('message', 'Order/Transaksi selesai');
-        $this->dispatch('closeModal');
+        $this->dispatch('openModal');
+        $tItem = 'Item'; //. str_repeat("&nbsp;", (6 - strlen('Item')));
+        $tQty  = 'Qty'; //. str_repeat("&nbsp;", (6 - strlen('Qty')));
+        $tHarga= 'Harga'; //str_repeat("&nbsp;", (6 - strlen('Harga'))).'Harga';
+        $tTotal= 'Total'; //str_repeat("&nbsp;", (6 - strlen('Total'))).'Total';
+        $caption = $tItem. $tHarga. $tTotal;
+
+        $itm        = "";
+        $subTotal   = 0;
+        $diskon     = 0;
+        $ppn        = 0;
+        $totalBelanja = OrderProduct::join('products as b','b.id','=','order_products.product_id')->where('order_id',$this->order->id)->get();
+        $itm .='<div class="row">';
+        foreach($totalBelanja as $k=> $v){
+
+            $subTotal += $v->unit_price*$v->quantity;
+                    
+            $itm .='<div class="col-5">'.$v->name.'</div>';
+            $itm .='<div class="col-1">'.$v->quantity.'</div>';
+            $itm .='<div class="col-3 text-center">'.number_format($v->unit_price, 0, ',', '.').'</div>';
+            $itm .='<div class="col-3 text-end">'.number_format($v->unit_price*$v->quantity, 0, ',', '.').'</div>';
+        }
+        $itm .='</div>';
+        $grandTotal = $subTotal-$diskon-$ppn;
+
+        session()->flash('struk', '
+        <div id="area-cetak">
+            <div class="text-center mb-2"><b>Nota Penjualan</b></div>
+            <table cellpadding="0" cellspacing="0">
+                <tr>
+                    <td><b>GALERI TATON</b></td>
+                </tr>
+                <tr>
+                    <td>Perum Palm Regency Karanglo Malang</td>
+                </tr>
+                <tr>
+                    <td>Telp: 08123456789</td>
+                </tr>
+            </table>
+            <hr style="border: 2px dashed black;">
+            <table cellpadding="0" cellspacing="0" style="width:100%">
+                <tr>
+                    <td align="left" class="txt-left">Nota&nbsp;</td>
+                    <td align="left" class="txt-left">:</td>
+                    <td align="left" class="txt-left">&nbsp;'.$this->order->invoice_number.'</td>
+                </tr>
+                <tr class="d-none">
+                    <td align="left" class="txt-left">Kasir</td>
+                    <td align="left" class="txt-left">:</td>
+                    <td align="left" class="txt-left">&nbsp;Admin</td>
+                </tr>
+                <tr>
+                    <td align="left" class="txt-left">Tgl.&nbsp;</td>
+                    <td align="left" class="txt-left">:</td>
+                    <td align="left" class="txt-left">&nbsp;'.date('d/m/Y H:i:s',strtotime($this->order->done_at)).'</td>
+                </tr>
+            </table>
+            <hr style="border: 2px dashed black;">
+            <div class="row">
+                <div class="col-5"><b>Item</b></div>
+                <div class="col-1"><b>Qty</b></div>
+                <div class="col-3 text-center"><b>Harga</b></div>
+                <div class="col-3 text-end"><b>Total</b></div>
+            </div>
+            <hr style="border: 2px dashed black;">
+            '.$itm.'
+            <hr style="border: 2px dashed black;">
+            <div class="row">
+                <div class="col-6">Sub Total</div>
+                <div class="col-6 text-end">'.number_format($subTotal, 0, ',', '.').'</div>
+                <div class="col-6">Diskon</div>
+                <div class="col-6 text-end">'.number_format($diskon, 0, ',', '.').'</div>
+                <div class="col-6">PPN</div>
+                <div class="col-6 text-end">'.number_format($ppn, 0, ',', '.').'</div>
+                <div class="col-6">Grand Total</div>
+                <div class="col-6 text-end">'.number_format($grandTotal, 0, ',', '.').'</div>
+                <div class="col-6">Bayar</div>
+                <div class="col-6 text-end">'.number_format($this->paid_amount, 0, ',', '.').'</div>
+                <div class="col-6">Kembalian</div>
+                <div class="col-6 text-end">'.number_format($this->paid_amount-$grandTotal, 0, ',', '.').'</div>
+            </div>
+        </div>
+        ');
+
+        $this->dispatch('transactionDone');
+        // session()->flash('message', 'Order/Transaksi selesai');
+        // $this->dispatch('closeModal');
     
         // Emitkan event untuk membuka kembali modal jika validasi gagal
         // return redirect()->route('pos');

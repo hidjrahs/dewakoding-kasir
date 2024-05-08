@@ -114,27 +114,37 @@
               <h5 class="modal-title" id="exampleModalLabel">Pembayaran</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form class="row g-3" wire:submit.prevent="done" enctype="multipart/form-data">
+            <form id="myForm" class="row g-3" wire:submit.prevent="done" enctype="multipart/form-data">
                 <div class="modal-body">
-                    @if (session()->has('payment'))
-                        <div class="alert alert-warning text-center">
-                            {{ session('payment') }}
+                    @if (session()->has('struk'))
+                        {!! session()->get('struk')!!}
+                    @else
+                        @if (session()->has('payment'))
+                            <div class="alert alert-warning text-center">
+                                {{ session('payment') }}
+                            </div>
+                        @endif
+                        @error('paid_amount')
+                            <div class="alert alert-danger mt-2">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                        <div class="col-md-12x">
+                            <label for="paid_amount" class="form-label">Uang yang dibayarkan</label>
+                            <input type="number" style="height:50px;" class="form-control" id="paid_amount" name="paid_amount" wire:model="paid_amount">
                         </div>
                     @endif
-                    @error('paid_amount')
-                        <div class="alert alert-danger mt-2">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                    <div class="col-md-12x">
-                        <label for="paid_amount" class="form-label">Uang yang dibayarkan</label>
-                        <input type="number" style="height:50px;" class="form-control" id="paid_amount" name="paid_amount" wire:model="paid_amount">
+                </div>
+                @if (!session()->has('struk'))
+                    <div class="btn-group" style="height:60px;" role="group" aria-label="Basic example">
+                        <button type="button" style="border-radius: 0;background-color: #838383;color: white;width: 50%;" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Batal</button>
+                        <button type="submit" style="border-radius:0;width:50%;" class="btn btn-primary">Selesai</button>
                     </div>
-                </div>
-                <div class="btn-group" style="height:60px;" role="group" aria-label="Basic example">
-                    <button type="button" style="border-radius: 0;background-color: #838383;color: white;width: 50%;" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Batal</button>
-                    <button type="submit" style="border-radius:0;width:50%;" class="btn btn-primary">Simpan Pembayaran</button>
-                </div>
+                @else
+                    <div class="btn-group" style="height:60px;" role="group" aria-label="Basic example">
+                        <button type="button" style="border-radius:0;" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close">Selesai</button>
+                    </div>
+                @endif
             </form>
           </div>
         </div>

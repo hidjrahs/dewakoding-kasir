@@ -3,11 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dewakoding Kasir</title>
+    <title></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter&display=swap"> -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Poppins:ital,wght@0,200;0,300;0,400;0,500;1,200&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.css" integrity="sha512-rBi1cGvEdd3NmSAQhPWId5Nd6QxE8To4ADjM2a6n0BrqQdisZ/RPUlm0YycDzvNL1HHAh1nKZqI0kSbif+5upQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
       body {
           font-family: 'Inter', sans-serif;
@@ -168,6 +169,8 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js" integrity="sha512-mh+AjlD3nxImTUGisMpHXW03gE6F4WdQyvuFRkjecwuWLwD2yCijw4tKA3NsEFpA1C3neiKhGXPSIGSfCYPMlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <div class="footer-menu">
       <a href="{{url('/pos')}}" type="button" class="navigasi btn btn-light {{ request()->is('pos*', '') || request()->is('/') ? 'active' : '' }}">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box" viewBox="0 0 16 16">
@@ -189,6 +192,18 @@
       </a>
     </div>
     <script>
+      $(function() {
+          $('input[name="daterange"]').daterangepicker({
+              locale: {
+                  format: 'DD/MM/YYYY'
+              },
+              opens: 'right',
+              startDate: moment().startOf('month'),
+              endDate: moment()
+          }, function(start, end, label) {
+              Livewire.dispatch('setDate',{ date: start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY')})
+          });
+      });
       document.addEventListener('livewire:init', function() {
         Livewire.on('openModal', function () {
           $('.modal-backdrop').remove();
@@ -200,14 +215,37 @@
           var modal = new bootstrap.Modal(document.getElementById('exampleModal'));
           modal.hide();
         });
+        Livewire.on('transactionDone', function () {
+          // fungsiTambahan();
+          setTimeout(function () {
+            // Ambil area yang akan dicetak
+            cetakStruk();
+          }, 1000); // Menunggu 1 detik sebelum mencetak (sesuaikan sesuai kebutuhan)
+        });
       });
-      // document.addEventListener('livewire:load', function() {
-        function confirmDelete(itemId) {
-          if (confirm('Yakin menghapus produk ini ?')) {
-              Livewire.dispatch('destroy', { id: itemId});
-          }
+      if(document.getElementById('myForm')){
+        document.getElementById('myForm').addEventListener('submit', function(event) {
+          // Jalankan fungsi JavaScript tambahan di sini
+          Livewire.dispatch('done');
+        });
+      }
+
+      function cetakStruk(){
+        var printContent = document.getElementById("area-cetak").innerHTML;
+        var originalContent = document.body.innerHTML;
+        document.body.innerHTML = printContent;
+        window.print();
+        document.body.innerHTML = originalContent;
+        $('.modal-backdrop').remove();
+        var modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+        modal.show();
+      }
+
+      function confirmDelete(itemId) {
+        if (confirm('Yakin menghapus produk ini ?')) {
+            Livewire.dispatch('destroy', { id: itemId});
         }
-      // });
+      }
       function hideContent(){
         if($("#product-area").hasClass('d-none')){
           $("#product-area").removeClass('d-none');
